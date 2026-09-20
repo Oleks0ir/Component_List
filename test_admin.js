@@ -67,6 +67,16 @@ try {
   assert.ok((await fetch(`${URL}/suggested_components`, { method: 'POST', headers: plain, body: body('s2') })).ok, 'suggesting must not need a password');
 
 
+  // --- numbers are validated before they can reach in_stock ---
+  assert.equal((await fetch(`${URL}/components/nope/use`, { method: 'POST', headers: plain, body: JSON.stringify({ amount: 1, action: 'take' }) })).status, 404, 'use on an unknown key must 404, not crash');
+  assert.equal((await fetch(`${URL}/components/s1/use`, { method: 'POST', headers: plain, body: JSON.stringify({ amount: 'abc', action: 'take' }) })).status, 400, 'a non-numeric amount must be rejected');
+  assert.equal((await fetch(`${URL}/components/s1/report-real`, { method: 'POST', headers: plain, body: JSON.stringify({ reported_number: 'abc' }) })).status, 400, 'a non-numeric count must be rejected');
+  assert.equal((await fetch(`${URL}/components/nope/report-real`, { method: 'POST', headers: plain, body: JSON.stringify({ reported_number: 1 }) })).status, 404, 'report-real on an unknown key must 404');
+
+  // the payoff: none of that junk landed in the column
+  const stock = (await (await fetch(`${URL}/components`)).json())[0].in_stock;
+  assert.ok(Number.isInteger(stock), `in_stock must still be an integer, got ${JSON.stringify(stock)}`);
+
   // --- reading reports is admin-only and joins to the component name ---
   assert.equal((await fetch(`${URL}/reports`)).status, 401, 'listing reports must need a password');
   const list = await (await fetch(`${URL}/reports`, { headers: admin })).json();

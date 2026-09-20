@@ -7,7 +7,6 @@
   --warn-bg: rgba(217, 119, 6, 0.1);
   --danger: #dc2626;
   --danger-bg: rgba(220, 38, 38, 0.08);
-  --info: #2563eb;
   --surface: #fff;
   --row-hover: rgba(0, 0, 0, 0.022);
   --field-bg: #fff;
@@ -21,7 +20,6 @@
     --warn-bg: rgba(251, 191, 36, 0.12);
     --danger: #f87171;
     --danger-bg: rgba(248, 113, 113, 0.1);
-    --info: #60a5fa;
     --surface: #1c1d24;
     --row-hover: rgba(255, 255, 255, 0.03);
     --field-bg: #16171d;

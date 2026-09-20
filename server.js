@@ -246,9 +246,15 @@ app.post('/api/reports', (req, res) => {
 });
 
 app.post('/api/components/:key/use', (req, res) => {
-  const { amount, action } = req.body;
+  const { action } = req.body;
+  const amount = Number(req.body.amount);
   try {
     const comp = db.prepare(`SELECT in_stock FROM components WHERE inventory_key = ?`).get(req.params.key);
+    if (!comp) return res.status(404).json({ error: 'No such component' });
+    // Without this an "amount" of "abc" writes NaN straight into in_stock.
+    if (!Number.isInteger(amount) || amount < 0) {
+      return res.status(400).json({ error: 'amount must be a non-negative integer' });
+    }
     const delta = action === 'take' ? -amount : amount;
     const newStock = Math.max(0, comp.in_stock + delta);
     db.prepare(`UPDATE components SET in_stock = ? WHERE inventory_key = ?`).run(newStock, req.params.key);
@@ -261,8 +267,14 @@ app.post('/api/components/:key/use', (req, res) => {
 });
 
 app.post('/api/components/:key/report-real', (req, res) => {
-  const { reported_number } = req.body;
+  const reported_number = Number(req.body.reported_number);
   try {
+    if (!Number.isInteger(reported_number) || reported_number < 0) {
+      return res.status(400).json({ error: 'reported_number must be a non-negative integer' });
+    }
+    if (!db.prepare(`SELECT 1 FROM components WHERE inventory_key = ?`).get(req.params.key)) {
+      return res.status(404).json({ error: 'No such component' });
+    }
     const count = db.prepare(`SELECT COUNT(*) as cnt FROM real_number_reports WHERE inventory_key = ? AND reported_number = ?`).get(req.params.key, reported_number).cnt;
     if (count >= 1) {
       db.prepare(`UPDATE components SET in_stock = ? WHERE inventory_key = ?`).run(reported_number, req.params.key);

@@ -38,19 +38,19 @@ function App() {
 
   const API = 'http://localhost:3001/api'
 
+  // Categories, packages and suggestions don't depend on the search box.
   useEffect(() => {
     loadLists()
-    fetchComponents()
     fetchSuggestedComponents()
+  }, [])
+
+  // Debounced: typing used to fire a request per keystroke, per list.
+  useEffect(() => {
+    const t = setTimeout(fetchComponents, 250)
+    return () => clearTimeout(t)
   }, [search, categoryFilter])
 
-  useEffect(() => {
-    if (showForm && !form.inventory_key) {
-      setForm(f => ({ ...f, inventory_key: Math.random().toString(36).substr(2, 9) }))
-    }
-  }, [showForm])
-
-  const loadLists = async () => {
+  async function loadLists() {
     try {
       const [catRes, pkgRes] = await Promise.all([
         fetch(`${API}/categories`),
@@ -63,18 +63,18 @@ function App() {
     }
   }
 
-  const fetchComponents = async () => {
+  async function fetchComponents() {
     try {
-      let url = `${API}/components?search=${search}`
-      if (categoryFilter) url += `&category=${categoryFilter}`
-      const res = await fetch(url)
+      const params = new URLSearchParams({ search })
+      if (categoryFilter) params.set('category', categoryFilter)
+      const res = await fetch(`${API}/components?${params}`)
       setComponents(await res.json())
     } catch (err) {
       console.error(err)
     }
   }
 
-  const fetchSuggestedComponents = async () => {
+  async function fetchSuggestedComponents() {
     try {
       const res = await fetch(`${API}/suggested_components`)
       setSuggestedComponents(await res.json())
@@ -243,7 +243,7 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ amount: parseInt(useAmount), action })
       })
-      const data = await res.json()
+      if (!res.ok) return alert('Could not update stock')
       setShowUseModal(null)
       setUseAmount('')
       fetchComponents()
@@ -295,7 +295,14 @@ function App() {
             <option value="">All Categories</option>
             {categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
           </select>
-          <button className={showForm ? 'btn' : 'btn btn-primary'} onClick={() => setShowForm(!showForm)}>
+          <button
+            className={showForm ? 'btn' : 'btn btn-primary'}
+            onClick={() => {
+              // fresh key and blank fields each time it opens, not a stale carry-over
+              if (!showForm) setForm({ ...BLANK_FORM, inventory_key: Math.random().toString(36).slice(2, 11) })
+              setShowForm(!showForm)
+            }}
+          >
             {showForm ? 'Cancel' : 'Add Component'}
           </button>
         </div>
