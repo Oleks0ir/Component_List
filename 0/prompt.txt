@@ -1,0 +1,25 @@
+/ponytail-audit
+
+---
+
+Proceed to optimize
+
+---
+
+git rm src/assets/hero.png src/assets/react.svg src/assets/vite.svg public/icons.svg
+
+---
+
+commit all the changes to remote origin and entire
+
+---
+
+Before commiting etc. Create .env an make the enire repository publishable
+
+---
+
+A small adition: components .db can be viewed online by anyone and can be pushed from other devs
+
+---
+
+Create a local commit message file that wont be tracked. Then write commit messages to there
