@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bf0owy9vd</task-id>
+<tool-use-id>908207bd-edcc-4135-9ce1-ea7664030d7d:inner</tool-use-id>
+<output-file>C:\Users\alexa\AppData\Local\Temp\claude\C--Users-alexa-P-Progs-Elab-Component-List\19882e81-907e-47d6-a3ec-7af627f7a857\tasks\bf0owy9vd.output</output-file>
+<status>killed</status>
+<summary>Background command "npm run dev &amp;&amp; npm run server" was stopped because the system is running low on memory</summary>
+</task-notification>
