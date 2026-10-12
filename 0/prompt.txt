@@ -1,0 +1,1 @@
+Great! Now. Change colors in the dropdown to be more contrast to the menu BG. Also add following feature: Add the "Copy" Feature to the dropdown. It sends the user to the same interface as "add Component" but prefill all fields wxcept inventory key with the "copied" part. The Inventory Key sshould be generated anew.
