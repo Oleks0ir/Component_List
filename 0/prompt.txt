@@ -1,0 +1,1 @@
+Adding fature: Allow user to choose to sort by name (A-Z)/ (Z-A),whilist grouping by cathegory and Package (Package is secondary)
